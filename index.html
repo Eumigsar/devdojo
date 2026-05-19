@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="styles.css" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
 </head>
 <body>
 	<header class="topbar">
@@ -18,7 +18,6 @@
 				<div class="brandTag">Exercícios interativos por linguagem e nível</div>
 			</div>
 		</div>
-
 		<div class="topActions">
 			<div id="userChip" class="chip" hidden>
 				<span class="dot"></span>
@@ -31,7 +30,7 @@
 	<main class="shell">
 		<section id="authView" class="card">
 			<h1>Entrar</h1>
-			<p class="muted">Este é um MVP local: o “login” e o progresso ficam salvos no seu navegador.</p>
+			<p class="muted">MVP local: seu “login” e seu progresso ficam salvos no navegador.</p>
 			<form id="loginForm" class="form">
 				<label>
 					<span>Seu nome</span>
@@ -39,6 +38,7 @@
 				</label>
 				<button class="btn primary" type="submit">Começar</button>
 			</form>
+			<p id="authError" class="notice" hidden></p>
 		</section>
 
 		<section id="appView" class="app" hidden>
@@ -49,6 +49,7 @@
 					<button class="navItem" data-route="progress">Progresso</button>
 					<button class="navItem" data-route="about">Sobre</button>
 				</nav>
+
 				<div class="sidebarFooter">
 					<div class="kpi">
 						<div class="kpiLabel">Streak (dias)</div>
@@ -71,7 +72,6 @@
 						<h2>Bem-vinda(o) ao DevDojo</h2>
 						<p class="muted">Escolha uma linguagem, selecione um nível e resolva desafios como mini-jogos.</p>
 					</div>
-
 					<div class="grid">
 						<div class="card">
 							<h3>1) Escolha uma linguagem</h3>
@@ -80,12 +80,12 @@
 						</div>
 						<div class="card">
 							<h3>2) Jogue os exercícios</h3>
-							<p class="muted">Múltipla escolha, complete o código e pequenos desafios.</p>
+							<p class="muted">Múltipla escolha e completar código.</p>
 							<button class="btn secondary" data-goto="progress">Ver progresso</button>
 						</div>
 						<div class="card">
-							<h3>3) Guarde seu progresso</h3>
-							<p class="muted">Sem conta ainda: tudo fica no seu navegador (por enquanto).</p>
+							<h3>3) Salve seu progresso</h3>
+							<p class="muted">Sem conta real ainda: fica no navegador (por enquanto).</p>
 							<div class="pillRow">
 								<span class="pill">Azul petróleo</span>
 								<span class="pill">Dourado</span>
@@ -100,7 +100,6 @@
 						<h2>Linguagens</h2>
 						<p class="muted">Escolha a linguagem e o nível.</p>
 					</div>
-
 					<div id="languageGrid" class="grid"></div>
 				</div>
 
@@ -125,16 +124,15 @@
 				<div id="route_about" class="route" hidden>
 					<div class="pageTitle">
 						<h2>Sobre</h2>
-						<p class="muted">MVP desktop-first. Próximos passos: contas reais, mais exercícios, ranking e editor.</p>
+						<p class="muted">Desktop-first (com responsivo básico). Próximo passo: login real + ranking.</p>
 					</div>
 					<div class="card">
 						<h3>Como funciona</h3>
 						<ul class="ul">
 							<li>Você seleciona uma linguagem e um nível.</li>
-							<li>Resolve exercícios como “mini-jogos”.</li>
-							<li>O progresso salva no <code>localStorage</code> do navegador.</li>
+							<li>Resolve exercícios como mini-jogos.</li>
+							<li>O progresso salva no <code>localStorage</code>.</li>
 						</ul>
-						<p class="muted">Quando quisermos login real, dá para migrar para Firebase/Supabase/Next.js.</p>
 					</div>
 				</div>
 			</section>
@@ -158,6 +156,6 @@
 		</div>
 	</div>
 
-	<script src="app.js"></script>
+	<script src="app.js" defer></script>
 </body>
 </html>

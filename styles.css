@@ -68,6 +68,15 @@ body {
 	padding: 18px;
 }
 
+.notice {
+	margin-top: 12px;
+	padding: 10px 12px;
+	border-radius: 14px;
+	border: 1px solid rgba(214,167,74,0.35);
+	background: rgba(214,167,74,0.12);
+	color: rgba(255,255,255,0.86);
+}
+
 .app { display: grid; grid-template-columns: 280px 1fr; gap: 18px; }
 
 .sidebar {
@@ -243,17 +252,13 @@ input:focus { border-color: rgba(214,167,74,0.5); box-shadow: 0 0 0 4px rgba(214
 .modalTitle { font-weight: 900; letter-spacing: 0.2px; }
 .modalBody { padding: 14px; }
 
-.exercise {
-	display: grid;
-	gap: 12px;
-}
+.exercise { display: grid; gap: 12px; }
 .exercisePrompt {
 	padding: 12px;
 	border-radius: 14px;
 	border: 1px solid rgba(255,255,255,0.12);
 	background: rgba(0,0,0,0.16);
 }
-
 .choiceGrid { display: grid; gap: 10px; }
 .choice {
 	text-align: left;
