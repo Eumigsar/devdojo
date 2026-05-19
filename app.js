@@ -1,6 +1,9 @@
 /* DevDojo MVP
    - Login local (nome) + progresso em localStorage
    - Exercícios por linguagem e nível (mini-jogos)
+
+   Fix: adiciona guards e um overlay de erro para evitar “tela travada”
+   caso algum elemento não exista/esteja diferente no deploy.
 */
 
 const STORAGE_KEY = 'devdojo:v1';
@@ -49,7 +52,6 @@ const DB = {
 		}
 	],
 
-	// Exercícios em formato simples: múltipla escolha e completar
 	exercises: [
 		// JS
 		{
@@ -175,7 +177,7 @@ const DB = {
 			prompt: 'Qual propriedade pode criar um stacking context?',
 			choices: ['opacity < 1', 'margin', 'display: block', 'padding'],
 			answerIndex: 0,
-			explain: 'opacity < 1 cria stacking context (entre outras propriedades).' 
+			explain: 'opacity < 1 cria stacking context (entre outras propriedades).'
 		},
 
 		// SQL
@@ -188,7 +190,7 @@ const DB = {
 			prompt: 'Qual consulta retorna todas as colunas da tabela users?',
 			choices: ['SELECT users;', 'SELECT * FROM users;', 'GET * users;', 'FROM users SELECT *;'],
 			answerIndex: 1,
-			explain: 'SELECT * FROM <tabela>;' 
+			explain: 'SELECT * FROM <tabela>;'
 		},
 		{
 			id: 'sql-m1',
@@ -215,6 +217,23 @@ const DB = {
 	]
 };
 
+function showFatalError(err) {
+	console.error(err);
+	const pre = document.createElement('pre');
+	pre.style.position = 'fixed';
+	pre.style.inset = '16px';
+	pre.style.padding = '14px';
+	pre.style.margin = '0';
+	pre.style.borderRadius = '14px';
+	pre.style.background = 'rgba(0,0,0,0.85)';
+	pre.style.border = '1px solid rgba(255,255,255,0.18)';
+	pre.style.color = 'white';
+	pre.style.zIndex = '9999';
+	pre.style.overflow = 'auto';
+	pre.textContent = `DevDojo encontrou um erro ao iniciar.\n\n${err?.stack || err}`;
+	document.body.appendChild(pre);
+}
+
 function loadState() {
 	try {
 		const raw = localStorage.getItem(STORAGE_KEY);
@@ -231,16 +250,15 @@ function saveState(state) {
 
 function todayKey() {
 	const d = new Date();
-	return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function computeStreak(lastActiveDays) {
-	// streak simples: quantos dias consecutivos (terminando hoje) existem em lastActiveDays
 	const set = new Set(lastActiveDays);
 	let streak = 0;
 	let d = new Date();
 	while (true) {
-		const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+		const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 		if (!set.has(k)) break;
 		streak++;
 		d.setDate(d.getDate() - 1);
@@ -248,9 +266,15 @@ function computeStreak(lastActiveDays) {
 	return streak;
 }
 
-function el(id) { return document.getElementById(id); }
-function show(id) { el(id).hidden = false; }
-function hide(id) { el(id).hidden = true; }
+function el(id) {
+	return document.getElementById(id);
+}
+
+function mustEl(id) {
+	const e = el(id);
+	if (!e) throw new Error(`Elemento não encontrado: #${id}`);
+	return e;
+}
 
 function setRoute(route) {
 	for (const r of document.querySelectorAll('.route')) r.hidden = true;
@@ -263,7 +287,7 @@ function setRoute(route) {
 }
 
 function renderLanguages(state) {
-	const grid = el('languageGrid');
+	const grid = mustEl('languageGrid');
 	grid.innerHTML = '';
 
 	for (const lang of DB.languages) {
@@ -273,7 +297,7 @@ function renderLanguages(state) {
 			<h3>${lang.name}</h3>
 			<p class="muted">${lang.description}</p>
 			<div class="pillRow">
-				${lang.levels.map(l => `<span class="pill">${l.name}</span>`).join('')}
+				${lang.levels.map((l) => `<span class="pill">${l.name}</span>`).join('')}
 			</div>
 			<div style="height: 10px"></div>
 			<button class="btn primary" data-lang="${lang.id}">Abrir exercícios</button>
@@ -296,14 +320,14 @@ function progressStats(state) {
 
 function renderSidebarKPIs(state) {
 	const { correct, completed } = progressStats(state);
-	el('kpiCorrect').textContent = String(correct);
-	el('kpiCompleted').textContent = String(completed);
-	el('kpiStreak').textContent = String(computeStreak(state.progress.activeDays || []));
+	mustEl('kpiCorrect').textContent = String(correct);
+	mustEl('kpiCompleted').textContent = String(completed);
+	mustEl('kpiStreak').textContent = String(computeStreak(state.progress.activeDays || []));
 }
 
 function renderProgress(state) {
-	el('progressUser').textContent = state.user.name;
-	const list = el('progressList');
+	mustEl('progressUser').textContent = state.user.name;
+	const list = mustEl('progressList');
 	list.innerHTML = '';
 
 	const completed = state.progress.completed || {};
@@ -312,27 +336,27 @@ function renderProgress(state) {
 	for (const lang of DB.languages) {
 		const container = document.createElement('div');
 		container.className = 'listItem';
-		const total = DB.exercises.filter(e => e.lang === lang.id).length;
-		const done = DB.exercises.filter(e => e.lang === lang.id && completedIds.has(e.id)).length;
+		const total = DB.exercises.filter((e) => e.lang === lang.id).length;
+		const done = DB.exercises.filter((e) => e.lang === lang.id && completedIds.has(e.id)).length;
 		container.innerHTML = `
 			<div>
 				<div class="strong">${lang.name}</div>
 				<div class="muted">${done}/${total} concluídos</div>
 			</div>
-			<span class="badgeMini">${Math.round((done/Math.max(total,1))*100)}%</span>
+			<span class="badgeMini">${Math.round((done / Math.max(total, 1)) * 100)}%</span>
 		`;
 		list.appendChild(container);
 	}
 }
 
 function openLanguage(langId, state) {
-	const lang = DB.languages.find(l => l.id === langId);
+	const lang = DB.languages.find((l) => l.id === langId);
 	if (!lang) return;
 
-	const modal = el('modal');
-	const body = el('modalBody');
-	el('modalTitle').textContent = `Exercícios — ${lang.name}`;
-	el('modalSubtitle').textContent = 'Escolha um nível e jogue.';
+	const modal = mustEl('modal');
+	const body = mustEl('modalBody');
+	mustEl('modalTitle').textContent = `Exercícios — ${lang.name}`;
+	mustEl('modalSubtitle').textContent = 'Escolha um nível e jogue.';
 
 	body.innerHTML = '';
 
@@ -341,7 +365,7 @@ function openLanguage(langId, state) {
 		section.className = 'card';
 		section.style.marginBottom = '12px';
 
-		const exList = DB.exercises.filter(e => e.lang === langId && e.level === level.id);
+		const exList = DB.exercises.filter((e) => e.lang === langId && e.level === level.id);
 		section.innerHTML = `
 			<div class="row" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
 				<div>
@@ -359,17 +383,17 @@ function openLanguage(langId, state) {
 }
 
 function openExercisePicker(langId, levelId, state) {
-	const lang = DB.languages.find(l => l.id === langId);
-	const levelName = lang?.levels.find(l => l.id === levelId)?.name || levelId;
+	const lang = DB.languages.find((l) => l.id === langId);
+	const levelName = lang?.levels.find((l) => l.id === levelId)?.name || levelId;
 
-	el('modalTitle').textContent = `${lang?.name || langId} — ${levelName}`;
-	el('modalSubtitle').textContent = 'Escolha um exercício.';
+	mustEl('modalTitle').textContent = `${lang?.name || langId} — ${levelName}`;
+	mustEl('modalSubtitle').textContent = 'Escolha um exercício.';
 
-	const body = el('modalBody');
+	const body = mustEl('modalBody');
 	body.innerHTML = '';
 
 	const completed = state.progress.completed || {};
-	const exList = DB.exercises.filter(e => e.lang === langId && e.level === levelId);
+	const exList = DB.exercises.filter((e) => e.lang === langId && e.level === levelId);
 
 	for (const ex of exList) {
 		const isDone = Boolean(completed[ex.id]);
@@ -388,12 +412,12 @@ function openExercisePicker(langId, levelId, state) {
 }
 
 function playExercise(exId, state) {
-	const ex = DB.exercises.find(e => e.id === exId);
+	const ex = DB.exercises.find((e) => e.id === exId);
 	if (!ex) return;
 
-	const body = el('modalBody');
-	el('modalTitle').textContent = ex.title;
-	el('modalSubtitle').textContent = 'Resolva para marcar como concluído.';
+	const body = mustEl('modalBody');
+	mustEl('modalTitle').textContent = ex.title;
+	mustEl('modalSubtitle').textContent = 'Resolva para marcar como concluído.';
 	body.innerHTML = '';
 
 	const wrap = document.createElement('div');
@@ -404,8 +428,6 @@ function playExercise(exId, state) {
 			<div>${ex.prompt}</div>
 		</div>
 	`;
-
-	let resultBox;
 
 	if (ex.type === 'mcq') {
 		const grid = document.createElement('div');
@@ -448,9 +470,6 @@ function playExercise(exId, state) {
 		wrap.appendChild(btn);
 	}
 
-	resultBox = document.createElement('div');
-	wrap.appendChild(resultBox);
-
 	const hint = document.createElement('div');
 	hint.className = 'muted';
 	hint.innerHTML = `Dica: ${escapeHtml(ex.explain)}`;
@@ -460,7 +479,6 @@ function playExercise(exId, state) {
 }
 
 function onSolved(ex, ok, state, userAnswer) {
-	// marca dia ativo
 	state.progress.activeDays = state.progress.activeDays || [];
 	const t = todayKey();
 	if (!state.progress.activeDays.includes(t)) state.progress.activeDays.push(t);
@@ -482,8 +500,7 @@ function onSolved(ex, ok, state, userAnswer) {
 		? `<div class="strong">✅ Acertou!</div><div class="muted">Progresso salvo.</div>`
 		: `<div class="strong">🟨 Quase!</div><div class="muted">Salvei mesmo assim (para revisão). Tente de novo depois.</div>`;
 
-	const body = el('modalBody');
-	body.appendChild(box);
+	mustEl('modalBody').appendChild(box);
 }
 
 function escapeHtml(s) {
@@ -498,19 +515,17 @@ function escapeHtml(s) {
 function init() {
 	let state = loadState();
 
-	const authView = el('authView');
-	const appView = el('appView');
-	const userChip = el('userChip');
-	const userName = el('userName');
-	const logoutBtn = el('logoutBtn');
+	const userChip = mustEl('userChip');
+	const userName = mustEl('userName');
+	const logoutBtn = mustEl('logoutBtn');
 
 	function setLoggedInUI() {
-		hide('authView');
-		show('appView');
+		mustEl('authView').hidden = true;
+		mustEl('appView').hidden = false;
 		userChip.hidden = false;
 		logoutBtn.hidden = false;
 		userName.textContent = state.user.name;
-		el('progressUser').textContent = state.user.name;
+		mustEl('progressUser').textContent = state.user.name;
 		renderLanguages(state);
 		renderProgress(state);
 		renderSidebarKPIs(state);
@@ -518,23 +533,21 @@ function init() {
 	}
 
 	function setLoggedOutUI() {
-		show('authView');
-		hide('appView');
+		mustEl('authView').hidden = false;
+		mustEl('appView').hidden = true;
 		userChip.hidden = true;
 		logoutBtn.hidden = true;
 	}
 
 	// Modal
-	el('modalClose').addEventListener('click', () => (el('modal').hidden = true));
-	el('modal').addEventListener('click', (e) => {
-		if (e.target === el('modal')) el('modal').hidden = true;
+	mustEl('modalClose').addEventListener('click', () => (mustEl('modal').hidden = true));
+	mustEl('modal').addEventListener('click', (e) => {
+		if (e.target === mustEl('modal')) mustEl('modal').hidden = true;
 	});
 
 	// Nav
 	for (const btn of document.querySelectorAll('.navItem')) {
-		btn.addEventListener('click', () => {
-			setRoute(btn.dataset.route);
-		});
+		btn.addEventListener('click', () => setRoute(btn.dataset.route));
 	}
 
 	for (const btn of document.querySelectorAll('[data-goto]')) {
@@ -542,9 +555,9 @@ function init() {
 	}
 
 	// Auth
-	el('loginForm').addEventListener('submit', (e) => {
+	mustEl('loginForm').addEventListener('submit', (e) => {
 		e.preventDefault();
-		const name = (el('nameInput').value || '').trim();
+		const name = (mustEl('nameInput').value || '').trim();
 		if (!name) return;
 		state = {
 			user: { name },
@@ -555,12 +568,11 @@ function init() {
 	});
 
 	logoutBtn.addEventListener('click', () => {
-		// só “desloga” mantendo o progresso salvo
 		state = loadState();
 		setLoggedOutUI();
 	});
 
-	el('resetProgress').addEventListener('click', () => {
+	mustEl('resetProgress').addEventListener('click', () => {
 		if (!state) return;
 		state.progress = { completed: {}, activeDays: [] };
 		saveState(state);
@@ -568,9 +580,31 @@ function init() {
 		renderSidebarKPIs(state);
 	});
 
-	// Boot
 	if (state?.user?.name) setLoggedInUI();
 	else setLoggedOutUI();
 }
 
-init();
+window.addEventListener('error', (e) => {
+	showFatalError(e.error || e.message);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+	showFatalError(e.reason);
+});
+
+// garante que o DOM existe antes de inicializar
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', () => {
+		try {
+			init();
+		} catch (err) {
+			showFatalError(err);
+		}
+	});
+} else {
+	try {
+		init();
+	} catch (err) {
+		showFatalError(err);
+	}
+}
