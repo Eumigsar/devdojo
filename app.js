@@ -2,236 +2,117 @@
    - Login local (nome) + progresso em localStorage
    - Exercícios por linguagem e nível (mini-jogos)
 
-   Fix: adiciona guards e um overlay de erro para evitar “tela travada”
-   caso algum elemento não exista/esteja diferente no deploy.
+   Erros: exibe overlay com detalhes + botão fechar
 */
 
 const STORAGE_KEY = 'devdojo:v1';
 
 const DB = {
 	languages: [
-		{
-			id: 'js',
-			name: 'JavaScript',
-			description: 'Fundamentos e lógica para web',
-			levels: [
-				{ id: 'easy', name: 'Iniciante' },
-				{ id: 'mid', name: 'Intermediário' },
-				{ id: 'hard', name: 'Avançado' }
-			]
-		},
-		{
-			id: 'py',
-			name: 'Python',
-			description: 'Do básico ao pensamento de automação',
-			levels: [
-				{ id: 'easy', name: 'Iniciante' },
-				{ id: 'mid', name: 'Intermediário' },
-				{ id: 'hard', name: 'Avançado' }
-			]
-		},
-		{
-			id: 'htmlcss',
-			name: 'HTML/CSS',
-			description: 'Estrutura, layout e responsividade',
-			levels: [
-				{ id: 'easy', name: 'Iniciante' },
-				{ id: 'mid', name: 'Intermediário' },
-				{ id: 'hard', name: 'Avançado' }
-			]
-		},
-		{
-			id: 'sql',
-			name: 'SQL',
-			description: 'Consultas e pensamento relacional',
-			levels: [
-				{ id: 'easy', name: 'Iniciante' },
-				{ id: 'mid', name: 'Intermediário' },
-				{ id: 'hard', name: 'Avançado' }
-			]
-		}
+		{ id: 'js', name: 'JavaScript', description: 'Fundamentos e lógica para web', levels: [{ id: 'easy', name: 'Iniciante' }, { id: 'mid', name: 'Intermediário' }, { id: 'hard', name: 'Avançado' }] },
+		{ id: 'py', name: 'Python', description: 'Do básico ao pensamento de automação', levels: [{ id: 'easy', name: 'Iniciante' }, { id: 'mid', name: 'Intermediário' }, { id: 'hard', name: 'Avançado' }] },
+		{ id: 'htmlcss', name: 'HTML/CSS', description: 'Estrutura, layout e responsividade', levels: [{ id: 'easy', name: 'Iniciante' }, { id: 'mid', name: 'Intermediário' }, { id: 'hard', name: 'Avançado' }] },
+		{ id: 'sql', name: 'SQL', description: 'Consultas e pensamento relacional', levels: [{ id: 'easy', name: 'Iniciante' }, { id: 'mid', name: 'Intermediário' }, { id: 'hard', name: 'Avançado' }] }
 	],
-
 	exercises: [
-		// JS
-		{
-			id: 'js-e1',
-			lang: 'js',
-			level: 'easy',
-			type: 'mcq',
-			title: 'Tipos',
-			prompt: 'Qual opção é um valor booleano em JavaScript?',
-			choices: ['"true"', 'true', '1', 'null'],
-			answerIndex: 1,
-			explain: 'Booleano é true/false sem aspas.'
-		},
-		{
-			id: 'js-e2',
-			lang: 'js',
-			level: 'easy',
-			type: 'fill',
-			title: 'Template string',
-			prompt: 'Complete para imprimir: Olá, Amanda!',
-			starter: 'const nome = "Amanda";\nconsole.log(`Olá, ${___}!`);',
-			solution: 'nome',
-			explain: 'Dentro de ${...} você coloca a variável nome.'
-		},
-		{
-			id: 'js-m1',
-			lang: 'js',
-			level: 'mid',
-			type: 'mcq',
-			title: 'Array.map',
-			prompt: 'Qual método transforma cada item e retorna um novo array?',
-			choices: ['forEach', 'map', 'filter', 'find'],
-			answerIndex: 1,
-			explain: 'map cria um novo array com a mesma quantidade de itens.'
-		},
-		{
-			id: 'js-h1',
-			lang: 'js',
-			level: 'hard',
-			type: 'mcq',
-			title: 'Event loop',
-			prompt: 'Qual opção descreve melhor uma microtask?',
-			choices: ['Executa depois de setTimeout', 'Executa antes do próximo render/timeout (ex.: Promise.then)', 'É uma thread separada', 'Só existe no Node.js'],
-			answerIndex: 1,
-			explain: 'Promises (then/catch/finally) entram na fila de microtasks.'
-		},
+		{ id: 'js-e1', lang: 'js', level: 'easy', type: 'mcq', title: 'Tipos', prompt: 'Qual opção é um valor booleano em JavaScript?', choices: ['"true"', 'true', '1', 'null'], answerIndex: 1, explain: 'Booleano é true/false sem aspas.' },
+		{ id: 'js-e2', lang: 'js', level: 'easy', type: 'fill', title: 'Template string', prompt: 'Complete para imprimir: Olá, Amanda!', starter: 'const nome = "Amanda";\nconsole.log(`Olá, ${___}!`);', solution: 'nome', explain: 'Dentro de ${...} você coloca a variável nome.' },
+		{ id: 'js-m1', lang: 'js', level: 'mid', type: 'mcq', title: 'Array.map', prompt: 'Qual método transforma cada item e retorna um novo array?', choices: ['forEach', 'map', 'filter', 'find'], answerIndex: 1, explain: 'map cria um novo array com a mesma quantidade de itens.' },
+		{ id: 'js-h1', lang: 'js', level: 'hard', type: 'mcq', title: 'Event loop', prompt: 'Qual opção descreve melhor uma microtask?', choices: ['Executa depois de setTimeout', 'Executa antes do próximo render/timeout (ex.: Promise.then)', 'É uma thread separada', 'Só existe no Node.js'], answerIndex: 1, explain: 'Promises (then/catch/finally) entram na fila de microtasks.' },
 
-		// Python
-		{
-			id: 'py-e1',
-			lang: 'py',
-			level: 'easy',
-			type: 'mcq',
-			title: 'Listas',
-			prompt: 'Qual é a sintaxe para criar uma lista vazia?',
-			choices: ['{}', '[]', '()', '<>'],
-			answerIndex: 1,
-			explain: '[] cria uma lista vazia.'
-		},
-		{
-			id: 'py-e2',
-			lang: 'py',
-			level: 'easy',
-			type: 'fill',
-			title: 'f-string',
-			prompt: 'Complete para imprimir: Olá, Aymara!',
-			starter: 'nome = "Aymara"\nprint(f"Olá, {___}!")',
-			solution: 'nome',
-			explain: 'Dentro de { } vai a variável nome.'
-		},
-		{
-			id: 'py-m1',
-			lang: 'py',
-			level: 'mid',
-			type: 'mcq',
-			title: 'Compreensão de lista',
-			prompt: 'Qual compreensão gera [0,1,4,9]?',
-			choices: ['[x*x for x in range(4)]', '[x**2 for x in range(4)]', '[x^2 for x in range(4)]', '[pow(x,2) for x in range(3)]'],
-			answerIndex: 1,
-			explain: '** é potência em Python.'
-		},
-		{
-			id: 'py-h1',
-			lang: 'py',
-			level: 'hard',
-			type: 'mcq',
-			title: 'GIL',
-			prompt: 'O GIL impacta principalmente…',
-			choices: ['I/O bound', 'CPU bound em threads', 'Processos', 'Asyncio'],
-			answerIndex: 1,
-			explain: 'Threads em Python sofrem em tarefas CPU bound; multiprocess ajuda.'
-		},
+		{ id: 'py-e1', lang: 'py', level: 'easy', type: 'mcq', title: 'Listas', prompt: 'Qual é a sintaxe para criar uma lista vazia?', choices: ['{}', '[]', '()', '<>'], answerIndex: 1, explain: '[] cria uma lista vazia.' },
+		{ id: 'py-e2', lang: 'py', level: 'easy', type: 'fill', title: 'f-string', prompt: 'Complete para imprimir: Olá, Aymara!', starter: 'nome = "Aymara"\nprint(f"Olá, {___}!")', solution: 'nome', explain: 'Dentro de { } vai a variável nome.' },
+		{ id: 'py-m1', lang: 'py', level: 'mid', type: 'mcq', title: 'Compreensão de lista', prompt: 'Qual compreensão gera [0,1,4,9]?', choices: ['[x*x for x in range(4)]', '[x**2 for x in range(4)]', '[x^2 for x in range(4)]', '[pow(x,2) for x in range(3)]'], answerIndex: 1, explain: '** é potência em Python.' },
+		{ id: 'py-h1', lang: 'py', level: 'hard', type: 'mcq', title: 'GIL', prompt: 'O GIL impacta principalmente…', choices: ['I/O bound', 'CPU bound em threads', 'Processos', 'Asyncio'], answerIndex: 1, explain: 'Threads em Python sofrem em tarefas CPU bound; multiprocess ajuda.' },
 
-		// HTML/CSS
-		{
-			id: 'hc-e1',
-			lang: 'htmlcss',
-			level: 'easy',
-			type: 'mcq',
-			title: 'Semântica',
-			prompt: 'Qual tag representa o conteúdo principal da página?',
-			choices: ['<div>', '<main>', '<section>', '<aside>'],
-			answerIndex: 1,
-			explain: '<main> define o conteúdo principal.'
-		},
-		{
-			id: 'hc-m1',
-			lang: 'htmlcss',
-			level: 'mid',
-			type: 'mcq',
-			title: 'Flexbox',
-			prompt: 'Qual propriedade alinha itens no eixo principal?',
-			choices: ['align-items', 'justify-content', 'flex-wrap', 'gap'],
-			answerIndex: 1,
-			explain: 'justify-content controla alinhamento no eixo principal.'
-		},
-		{
-			id: 'hc-h1',
-			lang: 'htmlcss',
-			level: 'hard',
-			type: 'mcq',
-			title: 'Stacking context',
-			prompt: 'Qual propriedade pode criar um stacking context?',
-			choices: ['opacity < 1', 'margin', 'display: block', 'padding'],
-			answerIndex: 0,
-			explain: 'opacity < 1 cria stacking context (entre outras propriedades).'
-		},
+		{ id: 'hc-e1', lang: 'htmlcss', level: 'easy', type: 'mcq', title: 'Semântica', prompt: 'Qual tag representa o conteúdo principal da página?', choices: ['<div>', '<main>', '<section>', '<aside>'], answerIndex: 1, explain: '<main> define o conteúdo principal.' },
+		{ id: 'hc-m1', lang: 'htmlcss', level: 'mid', type: 'mcq', title: 'Flexbox', prompt: 'Qual propriedade alinha itens no eixo principal?', choices: ['align-items', 'justify-content', 'flex-wrap', 'gap'], answerIndex: 1, explain: 'justify-content controla alinhamento no eixo principal.' },
+		{ id: 'hc-h1', lang: 'htmlcss', level: 'hard', type: 'mcq', title: 'Stacking context', prompt: 'Qual propriedade pode criar um stacking context?', choices: ['opacity < 1', 'margin', 'display: block', 'padding'], answerIndex: 0, explain: 'opacity < 1 cria stacking context (entre outras propriedades).' },
 
-		// SQL
-		{
-			id: 'sql-e1',
-			lang: 'sql',
-			level: 'easy',
-			type: 'mcq',
-			title: 'SELECT',
-			prompt: 'Qual consulta retorna todas as colunas da tabela users?',
-			choices: ['SELECT users;', 'SELECT * FROM users;', 'GET * users;', 'FROM users SELECT *;'],
-			answerIndex: 1,
-			explain: 'SELECT * FROM <tabela>;'
-		},
-		{
-			id: 'sql-m1',
-			lang: 'sql',
-			level: 'mid',
-			type: 'mcq',
-			title: 'JOIN',
-			prompt: 'Qual JOIN retorna linhas mesmo sem correspondência na tabela da direita?',
-			choices: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'CROSS JOIN'],
-			answerIndex: 1,
-			explain: 'LEFT JOIN mantém todas as linhas da esquerda.'
-		},
-		{
-			id: 'sql-h1',
-			lang: 'sql',
-			level: 'hard',
-			type: 'mcq',
-			title: 'Window function',
-			prompt: 'Qual função calcula ranking por grupo sem colapsar as linhas?',
-			choices: ['GROUP BY', 'ROW_NUMBER() OVER (...)', 'COUNT(*)', 'SUM()'],
-			answerIndex: 1,
-			explain: 'Window functions mantêm as linhas e adicionam colunas calculadas.'
-		}
+		{ id: 'sql-e1', lang: 'sql', level: 'easy', type: 'mcq', title: 'SELECT', prompt: 'Qual consulta retorna todas as colunas da tabela users?', choices: ['SELECT users;', 'SELECT * FROM users;', 'GET * users;', 'FROM users SELECT *;'], answerIndex: 1, explain: 'SELECT * FROM <tabela>;' },
+		{ id: 'sql-m1', lang: 'sql', level: 'mid', type: 'mcq', title: 'JOIN', prompt: 'Qual JOIN retorna linhas mesmo sem correspondência na tabela da direita?', choices: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'CROSS JOIN'], answerIndex: 1, explain: 'LEFT JOIN mantém todas as linhas da esquerda.' },
+		{ id: 'sql-h1', lang: 'sql', level: 'hard', type: 'mcq', title: 'Window function', prompt: 'Qual função calcula ranking por grupo sem colapsar as linhas?', choices: ['GROUP BY', 'ROW_NUMBER() OVER (...)', 'COUNT(*)', 'SUM()'], answerIndex: 1, explain: 'Window functions mantêm as linhas e adicionam colunas calculadas.' }
 	]
 };
 
+let __errorOverlayShown = false;
 function showFatalError(err) {
 	console.error(err);
+	if (__errorOverlayShown) return;
+	__errorOverlayShown = true;
+
+	const overlay = document.createElement('div');
+	overlay.style.position = 'fixed';
+	overlay.style.inset = '0';
+	overlay.style.background = 'rgba(0,0,0,0.65)';
+	overlay.style.zIndex = '99999';
+	overlay.style.display = 'grid';
+	overlay.style.placeItems = 'center';
+	overlay.style.padding = '16px';
+
+	const card = document.createElement('div');
+	card.style.width = 'min(820px, 96vw)';
+	card.style.maxHeight = 'min(80vh, 720px)';
+	card.style.overflow = 'auto';
+	card.style.borderRadius = '16px';
+	card.style.background = 'rgba(6, 16, 20, 0.96)';
+	card.style.border = '1px solid rgba(255,255,255,0.16)';
+	card.style.boxShadow = '0 18px 60px rgba(0,0,0,0.55)';
+
+	const header = document.createElement('div');
+	header.style.display = 'flex';
+	header.style.justifyContent = 'space-between';
+	header.style.alignItems = 'center';
+	header.style.gap = '12px';
+	header.style.padding = '12px 14px';
+	header.style.borderBottom = '1px solid rgba(255,255,255,0.12)';
+
+	const title = document.createElement('div');
+	title.style.color = 'white';
+	title.style.fontWeight = '900';
+	title.textContent = 'Ops — o DevDojo encontrou um erro ao iniciar';
+
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = 'Fechar';
+	closeBtn.style.cursor = 'pointer';
+	closeBtn.style.padding = '10px 12px';
+	closeBtn.style.borderRadius = '12px';
+	closeBtn.style.border = '1px solid rgba(255,255,255,0.18)';
+	closeBtn.style.background = 'rgba(255,255,255,0.06)';
+	closeBtn.style.color = 'white';
+	closeBtn.onclick = () => overlay.remove();
+
+	header.appendChild(title);
+	header.appendChild(closeBtn);
+
+	const body = document.createElement('div');
+	body.style.padding = '12px 14px 14px';
+	body.style.color = 'white';
+
+	const msg = document.createElement('div');
+	msg.style.opacity = '0.9';
+	msg.style.marginBottom = '10px';
+	msg.innerHTML = 'Para eu corrigir rapidamente, copie a mensagem abaixo (ou tire um print).';
+
 	const pre = document.createElement('pre');
-	pre.style.position = 'fixed';
-	pre.style.inset = '16px';
-	pre.style.padding = '14px';
+	pre.style.whiteSpace = 'pre-wrap';
+	pre.style.wordBreak = 'break-word';
 	pre.style.margin = '0';
+	pre.style.padding = '12px';
 	pre.style.borderRadius = '14px';
-	pre.style.background = 'rgba(0,0,0,0.85)';
-	pre.style.border = '1px solid rgba(255,255,255,0.18)';
-	pre.style.color = 'white';
-	pre.style.zIndex = '9999';
-	pre.style.overflow = 'auto';
-	pre.textContent = `DevDojo encontrou um erro ao iniciar.\n\n${err?.stack || err}`;
-	document.body.appendChild(pre);
+	pre.style.background = 'rgba(0,0,0,0.35)';
+	pre.style.border = '1px solid rgba(255,255,255,0.12)';
+	pre.style.fontFamily = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+	pre.style.fontSize = '12px';
+	pre.textContent = String(err?.stack || err);
+
+	body.appendChild(msg);
+	body.appendChild(pre);
+
+	card.appendChild(header);
+	card.appendChild(body);
+	overlay.appendChild(card);
+	document.body.appendChild(overlay);
 }
 
 function loadState() {
@@ -296,9 +177,7 @@ function renderLanguages(state) {
 		card.innerHTML = `
 			<h3>${lang.name}</h3>
 			<p class="muted">${lang.description}</p>
-			<div class="pillRow">
-				${lang.levels.map((l) => `<span class="pill">${l.name}</span>`).join('')}
-			</div>
+			<div class="pillRow">${lang.levels.map((l) => `<span class="pill">${l.name}</span>`).join('')}</div>
 			<div style="height: 10px"></div>
 			<button class="btn primary" data-lang="${lang.id}">Abrir exercícios</button>
 		`;
@@ -436,10 +315,7 @@ function playExercise(exId, state) {
 			const btn = document.createElement('button');
 			btn.className = 'choice';
 			btn.textContent = c;
-			btn.addEventListener('click', () => {
-				const ok = idx === ex.answerIndex;
-				onSolved(ex, ok, state);
-			});
+			btn.addEventListener('click', () => onSolved(ex, idx === ex.answerIndex, state));
 			grid.appendChild(btn);
 		});
 		wrap.appendChild(grid);
@@ -464,8 +340,7 @@ function playExercise(exId, state) {
 		btn.textContent = 'Verificar';
 		btn.addEventListener('click', () => {
 			const user = (input.value || '').trim();
-			const ok = user === ex.solution;
-			onSolved(ex, ok, state, user);
+			onSolved(ex, user === ex.solution, state, user);
 		});
 		wrap.appendChild(btn);
 	}
@@ -484,11 +359,7 @@ function onSolved(ex, ok, state, userAnswer) {
 	if (!state.progress.activeDays.includes(t)) state.progress.activeDays.push(t);
 
 	state.progress.completed = state.progress.completed || {};
-	state.progress.completed[ex.id] = {
-		correct: ok,
-		at: new Date().toISOString(),
-		userAnswer: userAnswer
-	};
+	state.progress.completed[ex.id] = { correct: ok, at: new Date().toISOString(), userAnswer };
 	saveState(state);
 
 	renderSidebarKPIs(state);
@@ -539,13 +410,11 @@ function init() {
 		logoutBtn.hidden = true;
 	}
 
-	// Modal
 	mustEl('modalClose').addEventListener('click', () => (mustEl('modal').hidden = true));
 	mustEl('modal').addEventListener('click', (e) => {
 		if (e.target === mustEl('modal')) mustEl('modal').hidden = true;
 	});
 
-	// Nav
 	for (const btn of document.querySelectorAll('.navItem')) {
 		btn.addEventListener('click', () => setRoute(btn.dataset.route));
 	}
@@ -554,15 +423,11 @@ function init() {
 		btn.addEventListener('click', () => setRoute(btn.dataset.goto));
 	}
 
-	// Auth
 	mustEl('loginForm').addEventListener('submit', (e) => {
 		e.preventDefault();
 		const name = (mustEl('nameInput').value || '').trim();
 		if (!name) return;
-		state = {
-			user: { name },
-			progress: { completed: {}, activeDays: [] }
-		};
+		state = { user: { name }, progress: { completed: {}, activeDays: [] } };
 		saveState(state);
 		setLoggedInUI();
 	});
@@ -592,7 +457,6 @@ window.addEventListener('unhandledrejection', (e) => {
 	showFatalError(e.reason);
 });
 
-// garante que o DOM existe antes de inicializar
 if (document.readyState === 'loading') {
 	document.addEventListener('DOMContentLoaded', () => {
 		try {
