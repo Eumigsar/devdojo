@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <style>body{margin:0;background:#09070d;color:#fff1d6;font-family:system-ui} #game-root{position:fixed;inset:0} #hud{display:none}</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>祭 学院 — Matsuri Isometric RPG V1</title>
+  <meta name="theme-color" content="#09070d" />
+</head>
+<body>
+  <div id="game-root"></div>
+  <div id="hud">
+    <div class="brand">
+      <div class="jp">祭 学院</div>
+      <div class="sub">ISOMETRIC RPG V1 · Phaser</div>
+    </div>
+    <div class="quest-card panel">
+      <div class="eyebrow">Missão ativa</div>
+      <h1 id="quest-title">—</h1>
+      <p id="quest-desc">—</p>
+      <div class="stats">
+        <div><b id="xp">0</b><span>XP</span></div>
+        <div><b id="coins">0</b><span>Moedas</span></div>
+        <div><b id="words">1</b><span>Palavras</span></div>
+        <div><b id="area">Pátio</b><span>Área</span></div>
+      </div>
+      <div class="hint">WASD / setas para andar · E para interagir · clique no mapa para caminhar</div>
+    </div>
+    <div class="side panel">
+      <div class="eyebrow">Trilha do Reino 1</div>
+      <h2>Caminho do Punho Vivo</h2>
+      <div id="steps"></div>
+      <div class="eyebrow codex-title">Biblioteca viva</div>
+      <div id="codex"></div>
+    </div>
+    <div id="toast"></div>
+    <div id="dialog" class="panel hidden">
+      <div class="portrait" id="dialog-portrait">师</div>
+      <div>
+        <div class="eyebrow" id="dialog-eye">Sifu</div>
+        <h2 id="dialog-title">—</h2>
+        <p id="dialog-text">—</p>
+        <div class="actions" id="dialog-actions"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
