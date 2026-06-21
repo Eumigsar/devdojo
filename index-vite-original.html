@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a12" />
+  <meta name="description" content="祭 学院 — Academia de Mandarim em 3D" />
+  <title>祭 学院 — Academia de Mandarim 3D</title>
+  <link rel="stylesheet" href="/src/ui/styles.css" />
+</head>
+<body>
+  <!-- canvas 3D do Babylon -->
+  <canvas id="renderCanvas" touch-action="none"></canvas>
+
+  <!-- camada de UI 2D (HUD, diálogos, menus) -->
+  <div id="ui-root"></div>
+
+  <!-- controles touch (aparecem só em telas com toque) -->
+  <div id="touch-controls" class="hidden">
+    <div id="joystick" class="joystick"><div class="joystick-knob"></div></div>
+    <button id="btn-jump" class="touch-btn" aria-label="Pular">跳</button>
+    <button id="btn-interact" class="touch-btn touch-btn-interact" aria-label="Interagir">话</button>
+  </div>
+
+  <!-- loader -->
+  <div id="boot-loader">
+    <div class="boot-seal"><span>学</span></div>
+    <p id="boot-text">despertando o santuário…</p>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

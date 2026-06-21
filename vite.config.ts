@@ -1,16 +1,17 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: './',
+  base: "./",
+  server: { host: true, port: 5173 },
   build: {
-    target: 'es2020',
+    target: "es2020",
     sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
-          phaser: ['phaser']
-        }
-      }
-    }
-  }
+          babylon: ["@babylonjs/core", "@babylonjs/loaders"],
+        },
+      },
+    },
+  },
 });

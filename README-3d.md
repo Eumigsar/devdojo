@@ -48,22 +48,6 @@ src/
     styles.css             # responsivo PC + celular (safe-area, touch)
 ```
 
-## Os Mestres (personagens)
-
-Seis mestres originais, cada um um arquétipo da cultura chinesa, construídos
-como **modelos 3D procedurais** (`CharacterFactory.ts`) com silhueta, paleta,
-chapéu e objeto distintos:
-
-- **文博 Wen Bo** — erudito confuciano (bibliotecário, formal)
-- **花岚 Hua Lan** — guerreira wuxia (mestra dos tons, intensa)
-- **云道长 Yun Daozhang** — sábio taoista (guia, fala por enigmas)
-- **婆婆 Po Po** — avó contadora de histórias (calorosa)
-- **金财 Jin Cai** — comerciante esperto (tagarela, persuasivo)
-- **小宝 Xiao Bao** — criança prodígio (travessa, desafiadora)
-
-A personalidade aparece nos diálogos (cada um aceita registros sociais
-diferentes) e na galeria 👥 da HUD, onde cada mestre fala sua saudação.
-
 ## Mecânica de contexto social
 
 Cada escolha de diálogo carrega `register` (formal/neutro/casual) e
@@ -73,9 +57,8 @@ e selos. Falar casual com um ancião "destoa" e o NPC reage.
 
 ## Próximos passos (roadmap)
 
-1. **Assets reais**: os personagens já são modelos 3D procedurais
-   (`CharacterFactory.ts`). Para trocá-los por GLB esculpidos, aponte
-   `levelTypes.glbUrl` e importe `@babylonjs/loaders`.
+1. **Assets reais**: troque as cápsulas/caixas por GLB. O loader já está previsto
+   em `levelTypes.glbUrl` e `GameScene` (importe `@babylonjs/loaders`).
 2. **Física robusta**: troque o raycast de chão por **Rapier**
    (`@babylonjs/core/Physics/v2` + plugin Havok/Rapier) — a interface do
    `PlayerController` permanece a mesma.
@@ -91,19 +74,3 @@ e selos. Falar casual com um ancião "destoa" e o NPC reage.
 A voz usa as vozes chinesas (zh-CN) instaladas no sistema. Sem voz instalada, o
 tom sintetizado toca sozinho e o resto funciona. O áudio só inicia após o
 primeiro toque/clique (política dos navegadores).
-
-
----
-
-## Complemento sugerido para o MVP
-Este pacote também inclui uma camada de produto para transformar o protótipo 3D em MVP jogável:
-
-- `docs/GDD.md` — visão de jogo e experiência
-- `docs/TDD.md` — arquitetura técnica recomendada
-- `docs/MVP_PLAN.md` — plano prático por fases
-- `docs/WORLD_MAP.md` — mapa de áreas e conteúdo
-- `src/data/` — vocabulário, missões, reinos, NPCs, locais, taolu e mascote
-- `src/systems/` — save local, progresso, missões, vocabulário e mascote
-- `src/types/domain.ts` — tipos centrais do domínio
-
-A recomendação é **manter Vite + Babylon.js** por enquanto e evoluir a experiência antes de adicionar backend.
